@@ -1,0 +1,178 @@
+﻿@model EasyBusProject.Models.Ticket
+
+
+@{
+    ViewData["Title"] = "DetailsOfTrip";
+}
+
+
+<style>
+    input {
+    }
+
+    .bus {
+        background-color: #FEC91B;
+        width: 250px;
+        padding-bottom: 20px;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+        border-width: 4px;
+        border-color: black;
+        border-style: solid;
+    }
+
+    .wheel {
+        margin-top: 25px;
+        margin-left: 17px;
+    }
+
+    .custom-checkbox {
+        width: 40px;
+        height: 40px;
+        border-radius: 5px;
+        background-color: white;
+        cursor: pointer;
+        margin-top: 5px;
+    }
+
+    input[type="checkbox"]:checked + .custom-checkbox {
+        /* Your styles for the label when the checkbox is checked */
+        /* For example, change color */
+        background-color: lightgreen;
+    }
+
+    label {
+        width: 20px;
+        height: 20px;
+    }
+
+    .item {
+        border: 2px solid darkgrey;
+        border-radius: 10px;
+        padding: 15px;
+        background-color: #f0f0f0;
+    }
+    .hhead{
+         background-color: #f0f0f0;
+    }
+    .ffoot{
+         background-color: #FEC91B;
+    }
+
+</style>
+
+
+<form asp-action="DetailsOfTrip">
+<div class="container ">
+    <div class="row mt-5">
+        <div class="col-md-4 item mb-4">
+            <!-- Your first form goes here -->
+            <div>
+                <h1 class="text-center">Pick Your Seats</h1>
+                    <div class="container bus mt-3">
+                        @{
+                            var totalCapacity = Model.TotalCapacity;
+                            var rowNum = totalCapacity / 4 + (totalCapacity % 4 == 0 ? 0 : 1);
+                            var seatNumber = 1;
+                            var seatsTaken = ViewBag.SeatsTaken as string[];
+                        }
+
+                        <img class="wheel" width="40px" src="~/Images/steering-wheel-transparent-background-15.png" />
+                        <hr />
+                        @for (var row = 0; row < rowNum; row++)
+                        {
+                            <div class="row">
+                                @for (var col = 0; col < 4 && seatNumber <= totalCapacity; col++)
+                                {
+                                    <div class="col-3 text-center">
+                                        <!-- Adjust grid column size here -->
+                                        @{
+                                            var disabled = seatsTaken != null && seatsTaken.Contains(seatNumber.ToString()) ? "disabled" : "";
+                                            var color = seatsTaken != null && seatsTaken.Contains(seatNumber.ToString()) ? "red" : "black";
+                                        }
+                                        <input hidden data-val="true" data-val-required="The Boolean field is required." id="S @seatNumber" name="CheckboxValues[@seatNumber]" type="checkbox" value="true" @disabled />
+                                        <label for="S @seatNumber" class="custom-checkbox" style="color: @color;"><b>@seatNumber</b></label>
+                                        @{
+                                            seatNumber++;
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+
+                    <div class="text-center mt-5 mb-3">
+                        <input class="btn btn-warning" type="submit" value="Buy Seats" id="buySeatsButton" />
+                    </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mt-3" style="margin-left:100px">
+            <!-- Your second form goes here -->
+                <div asp-validation-summary="All" class="text-danger"></div>
+                @* Pass Hidden Data *@
+                <input type="hidden" name="id" value="@ViewBag.tripId" />
+                <input type="hidden" name="date" value="@Model.Date" />
+                <input type="hidden" name="userName" value="@ViewBag.user" />
+                <input type="hidden" name="busName" value="@Model.BusName" />
+                <input type="hidden" name="price" value="@Model.Price" />
+                <input type="hidden" name="startFrom" value="@Model.StartFrom" />
+                <input type="hidden" name="destination" value="@Model.Destination" />
+
+
+                <h3 style="font-weight:bolder">Trip Details</h3>
+                <br />
+             
+                <table class="table">
+  <thead>
+    <tr class="hhead">
+     <th scope="col">From</th>
+     <th scope="col">To</th>
+     <th scope="col"> @Html.DisplayNameFor(model => model.Date)</th>
+     <th scope="col"> @Html.DisplayNameFor(model => model.Time)</th>
+     <th scope="col"> Available Seats</th>
+     <th scope="col">  Bus Model</th>
+     <th scope="col"> @Html.DisplayNameFor(model => model.Price)</th>
+
+
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="ffoot">
+      <td>@Html.DisplayFor(model => model.StartFrom)</td>
+      <td>@Html.DisplayFor(model => model.Destination)</td>
+      <td>@Html.DisplayFor(model => model.Date)</td>
+      <td>@Html.DisplayFor(model => model.Time)</td>
+     <center>  <td>@Html.DisplayFor(model => model.NumOfAvailSeats)</td></center>
+       <td>@Html.DisplayFor(model => model.BusName)</td>
+        <td>@Html.DisplayFor(model => model.Price)</td>
+
+    </tr>
+ 
+  </tbody>
+</table>
+
+        </div>
+    </div>
+</div>
+</form>
+
+<script>
+    document.getElementById('buySeatsButton').addEventListener('click', function (event) {
+        // Check if at least one seat is selected
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        var atLeastOneSeatSelected = Array.from(checkboxes).some(function (checkbox) {
+            return checkbox.checked;
+        });
+
+        // If no seat is selected, prevent the form submission and show a message
+        if (!atLeastOneSeatSelected) {
+            @* event.preventDefault(); *@
+            var errorMessage = 'Please select at least one seat.';
+            // You can replace 'CheckboxValues' with the actual name of your checkbox array in ModelState
+            ModelState.AddModelError("NumOfSeatsOfUser", errorMessage);
+        }
+    });
+</script>

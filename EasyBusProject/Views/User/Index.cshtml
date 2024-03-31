@@ -1,0 +1,63 @@
+﻿@model IEnumerable<EasyBusProject.ViewModels.UserRoleVM>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+<style>
+    .headd{
+         background-color: #FEC91B;
+    }
+    thead th{
+        width:50%;
+    }
+    .bbtn{
+         background-color: #FEC91B;
+    }
+    .create{
+        color: #FEC91B;
+
+    }
+</style>
+
+
+<p>
+    <a  class="create"asp-action="Create">Create New</a>
+</p>
+<form method="post">
+
+
+
+
+      <table class="table table-hover">
+      <thead>
+        <tr class="headd">
+          <th scope="col">  @Html.DisplayNameFor(model => model.UserName)</th>
+          <th scope="col"> @Html.DisplayNameFor(model => model.IsAdmin)</th>
+
+        </tr>
+      </thead>
+       <tbody>
+  
+    @foreach (var item in Model) {
+         
+               
+     
+        <tr>
+          <th scope="row"> @Html.DisplayFor(modelItem => item.UserName)</th>
+          <td><input type="checkbox" name="userRoleDictVM.UserIdList" value="@item?.Id" /></td>
+          <td>  <input hidden data-val="true" name="userRole[@item.Id]" type="checkbox" value="@item?.IsAdmin" /></td>
+          <td> <input type="hidden" name="Id"  class="Id" value="@item?.Id" /></td>
+        </tr>
+        
+    }
+        </tbody>
+    </table>
+
+    <input class="btn btn-warning" type="submit" value="Change" />
+   
+</form>
+
+
+<script src="~/js/UserRole.js" ></script>
